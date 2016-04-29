@@ -242,9 +242,12 @@ class DMatrix(object):
             self._init_from_npy2d(data, missing)
         else:
             try:
+                print('dt', data)
                 csr = scipy.sparse.csr_matrix(data)
+                print('cst', csr)
                 self._init_from_csr(csr)
-            except:
+            except Exception as e:
+                print(e)
                 raise TypeError('can not initialize DMatrix from {}'.format(type(data).__name__))
         if label is not None:
             self.set_label(label)
@@ -265,6 +268,7 @@ class DMatrix(object):
                                                 c_array(ctypes.c_uint, csr.indices),
                                                 c_array(ctypes.c_float, csr.data),
                                                 len(csr.indptr), len(csr.data),
+                                                csr.shape[1],
                                                 ctypes.byref(self.handle)))
 
     def _init_from_csc(self, csc):
@@ -541,6 +545,7 @@ class DMatrix(object):
             if len(feature_names) != len(set(feature_names)):
                 raise ValueError('feature_names must be unique')
             if len(feature_names) != self.num_col():
+                print(feature_names, self.num_col())
                 msg = 'feature_names must have the same length as data'
                 raise ValueError(msg)
             # prohibit to use symbols may affect to parse. e.g. []<

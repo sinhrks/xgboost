@@ -119,6 +119,7 @@ XGB_DLL int XGDMatrixCreateFromDataIter(
  * \param data fvalue
  * \param nindptr number of rows in the matix + 1
  * \param nelem number of nonzero elements in the matrix
+ * \param num_cols matrix width
  * \param out created dmatrix
  * \return 0 when success, -1 when failure happens
  */
@@ -127,6 +128,7 @@ XGB_DLL int XGDMatrixCreateFromCSR(const bst_ulong *indptr,
                                    const float *data,
                                    bst_ulong nindptr,
                                    bst_ulong nelem,
+                                   bst_ulong num_cols,
                                    DMatrixHandle *out);
 /*!
  * \brief create a matrix content from CSC format

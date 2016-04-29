@@ -222,6 +222,7 @@ int XGDMatrixCreateFromCSR(const bst_ulong* indptr,
                            const float* data,
                            bst_ulong nindptr,
                            bst_ulong nelem,
+                           bst_ulong num_col,
                            DMatrixHandle* out) {
   std::unique_ptr<data::SimpleCSRSource> source(new data::SimpleCSRSource());
 
@@ -234,10 +235,9 @@ int XGDMatrixCreateFromCSR(const bst_ulong* indptr,
   mat.row_data_.resize(nelem);
   for (bst_ulong i = 0; i < nelem; ++i) {
     mat.row_data_[i] = RowBatch::Entry(indices[i], data[i]);
-    mat.info.num_col = std::max(mat.info.num_col,
-                                static_cast<uint64_t>(indices[i] + 1));
   }
   mat.info.num_row = nindptr - 1;
+  mat.info.num_col = num_col;
   mat.info.num_nonzero = static_cast<uint64_t>(nelem);
   *out  = DMatrix::Create(std::move(source));
   API_END();

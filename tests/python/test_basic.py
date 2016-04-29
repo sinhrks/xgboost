@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+from scipy import sparse
 import xgboost as xgb
 import unittest
 
@@ -153,6 +154,48 @@ class TestBasic(unittest.TestCase):
         # object dtype
         data = np.array([['a', 'b'], ['c', 'd']])
         self.assertRaises(ValueError, xgb.DMatrix, data)
+
+    def test_dmatrix_init_csr(self):
+        data = [1, 0, 3]
+        dm = xgb.DMatrix(data)
+        self.assertEqual(dm.num_row(), 1)
+        self.assertEqual(dm.num_col(), 3)
+
+        data = [1, 0, 0]
+        dm = xgb.DMatrix(data)
+        self.assertEqual(dm.num_row(), 1)
+        self.assertEqual(dm.num_col(), 3)
+
+        data = [[0, 0, 0], [0, 0, 0]]
+        dm = xgb.DMatrix(data)
+        self.assertEqual(dm.num_row(), 2)
+        self.assertEqual(dm.num_col(), 3)
+
+        data = sparse.csr_matrix([[1, 3, 0], [1, 3, 0]])
+        dm = xgb.DMatrix(data)
+        self.assertEqual(dm.num_row(), 2)
+        self.assertEqual(dm.num_col(), 3)
+
+        data = sparse.csr_matrix([[0, 0, 0], [0, 0, 0]])
+        dm = xgb.DMatrix(data)
+        self.assertEqual(dm.num_row(), 2)
+        self.assertEqual(dm.num_col(), 3)
+
+    def test_dmatrix_init_csr_feature_names(self):
+        feature_names = ['a', 'b', 'c']
+        dm = xgb.DMatrix([1, 0, 3], feature_names=feature_names)
+        self.assertEqual(dm.feature_names, feature_names)
+
+        dm = xgb.DMatrix([1, 2, 0], feature_names=feature_names)
+        self.assertEqual(dm.feature_names, feature_names)
+
+        data = sparse.csr_matrix([[1, 3, 0], [1, 3, 0]])
+        dm = xgb.DMatrix(data, feature_names=feature_names)
+        self.assertEqual(dm.feature_names, feature_names)
+
+        data = sparse.csr_matrix([[0, 0, 0], [0, 0, 0]])
+        dm = xgb.DMatrix(data, feature_names=feature_names)
+        self.assertEqual(dm.feature_names, feature_names)
 
     def test_cv(self):
         dm = xgb.DMatrix(dpath + 'agaricus.txt.train')
